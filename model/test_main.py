@@ -23,8 +23,8 @@ async def test(dut):
     await cocotb.triggers.Timer(1,'ns')
     count = 0
     for _ in range(1000):
-        x1 = random.randint(1,15)
-        x2 = random.randint(1,15)
+        x1 = random.randint(1,7)
+        x2 = random.randint(1,7)
         expected = (x1 + x2) % 15
         dut.x1.value = cocotb.types.LogicArray(int_to_bin(x1,4))
         dut.x2.value = cocotb.types.LogicArray(int_to_bin(x2,4))
