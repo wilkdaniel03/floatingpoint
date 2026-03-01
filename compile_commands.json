@@ -1,0 +1,12 @@
+[
+{
+  "directory": "/home/dev/floatingpoint/build/src",
+  "command": "/usr/bin/c++  -I/home/dev/floatingpoint/ac_types/include -std=gnu++2a -o CMakeFiles/Model.dir/model.cpp.o -c /home/dev/floatingpoint/src/model.cpp",
+  "file": "/home/dev/floatingpoint/src/model.cpp"
+},
+{
+  "directory": "/home/dev/floatingpoint/build/src",
+  "command": "/usr/bin/c++   -std=gnu++2a -o CMakeFiles/Main.dir/main.cpp.o -c /home/dev/floatingpoint/src/main.cpp",
+  "file": "/home/dev/floatingpoint/src/main.cpp"
+}
+]
