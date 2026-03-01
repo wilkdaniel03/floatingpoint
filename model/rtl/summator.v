@@ -21,4 +21,6 @@ module summator
 		assign cn[i+1] = gn[i] | (pn[i] & cn[i]);
 	end
 
+	assign cout = cn[4];
+
 endmodule
