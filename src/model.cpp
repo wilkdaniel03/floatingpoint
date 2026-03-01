@@ -4,9 +4,10 @@
 #include <concepts>
 #include <cmath>
 #include <memory>
-#include <any>
+#include <format>
 
 #include <ac_int.h>
+#include <ac_float.h>
 
 template <uint8_t size>
 concept SizeConcept = size <= 64;
@@ -78,11 +79,25 @@ public:
 	}
 };
 
+template <uint8_t S, uint8_t I, uint8_t E>
+ac_float<S,I,E> add_float(ac_float<S,I,E> f1, ac_float<S,I,E> f2) {
+	if(f2.exp() > f1.exp()) std::swap(f1,f2);
+	uint32_t diff = f1.exp() - f2.exp();
+	auto f2Mant = f2.mantissa() >> diff;
+	ac_float<S,I,E> res = 0.0;
+	auto mantSum = f1.mantissa() + f2Mant;
+	mantSum >>= 1;
+	res.set_mantissa(mantSum);
+	res.set_exp(f1.exp() + 1);
+	return res;
+}
+
 int main(void) {
-	NBitShifter<10> shifter(327,6);
-	std::cout << "Start -> " << *shifter << std::endl;
-	shifter.Shift();
-	std::cout << *shifter << ", " << (327 >> 6) << std::endl;
+	ac_float<32,24,8> f1 = 1.2;
+	ac_float<32,24,8> f2 = 1.5;
+	std::cout << f1.mantissa() << ", " << f1.exp() << ", " << f1.to_string(ac_base_mode::AC_BIN) << std::endl;
+	std::cout << f2.mantissa() << ", " << f2.exp() << ", " << f2.to_string(ac_base_mode::AC_BIN) << std::endl;
+	std::cout << f1.to_double() << " + " << f2.to_double() << " = " << add_float<32,24,8>(f1,f2).to_double() << std::endl;
 
 	return EXIT_SUCCESS;
 }
