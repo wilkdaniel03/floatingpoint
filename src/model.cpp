@@ -83,21 +83,42 @@ template <uint8_t S, uint8_t I, uint8_t E>
 ac_float<S,I,E> add_float(ac_float<S,I,E> f1, ac_float<S,I,E> f2) {
 	if(f2.exp() > f1.exp()) std::swap(f1,f2);
 	uint32_t diff = f1.exp() - f2.exp();
-	auto f2Mant = f2.mantissa() >> diff;
+	NBitShifter<I> shifter(f2.mantissa().to_double(),diff);
+	shifter.Shift();
+	auto f2Mant = *shifter;
 	ac_float<S,I,E> res = 0.0;
 	auto mantSum = f1.mantissa() + f2Mant;
-	mantSum >>= 1;
+	auto exp = f1.exp();
+	if(mantSum >= 2) {
+		mantSum >>= 1;
+		exp += 1;
+	}
 	res.set_mantissa(mantSum);
-	res.set_exp(f1.exp() + 1);
+	res.set_exp(exp);
+	return res;
+}
+
+template <uint8_t S, uint8_t I, uint8_t E>
+ac_float<S,I,E> mul_float(ac_float<S,I,E> f1, ac_float<S,I,E> f2) {
+	ac_float<S,I,E> res = 0.0;
+	auto mantMul = f1.mantissa() * f2.mantissa();
+	auto expMul = f1.exp() + f2.exp();
+	while(mantMul >= 2 || mantMul <= -2) {
+		mantMul >>= 1;
+		expMul += 1;
+	}
+	res.set_mantissa(mantMul);
+	res.set_exp(expMul);
 	return res;
 }
 
 int main(void) {
-	ac_float<32,24,8> f1 = 1.2;
-	ac_float<32,24,8> f2 = 1.5;
+	ac_float<32,24,8> f1 = 2.5;
+	ac_float<32,24,8> f2 = -35.0;
 	std::cout << f1.mantissa() << ", " << f1.exp() << ", " << f1.to_string(ac_base_mode::AC_BIN) << std::endl;
 	std::cout << f2.mantissa() << ", " << f2.exp() << ", " << f2.to_string(ac_base_mode::AC_BIN) << std::endl;
 	std::cout << f1.to_double() << " + " << f2.to_double() << " = " << add_float<32,24,8>(f1,f2).to_double() << std::endl;
+	std::cout << f1.to_double() << " * " << f2.to_double() << " = " << mul_float<32,24,8>(f1,f2).to_double() << std::endl;
 
 	return EXIT_SUCCESS;
 }
